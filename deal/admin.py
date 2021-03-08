@@ -6,3 +6,4 @@ admin.site.register(Adress)
 admin.site.register(Deals)
 admin.site.register(AssetTypes)
 admin.site.register(ComputeDeals)
+

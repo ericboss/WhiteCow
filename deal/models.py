@@ -1,7 +1,9 @@
 from django.db import models
 import pandas as pd
+import numpy as np
 import requests
-from config import *
+from .config import *
+import json
 
 class Adress(models.Model):
     city = models.CharField(max_length = 40)
@@ -25,93 +27,113 @@ class AssetTypes(models.Model):
     
     offset = models.CharField(max_length = 10, default = "0")
     limit = models.IntegerField(default=200)
-    baths_min = models.IntegerField(default= None)
-    beds_min = models.IntegerField(default = None)
-    radius = models.IntegerField(default = None)
-    price_min = models.IntegerField(default = None)
+    baths_min = models.IntegerField( blank=True, null=True)
+    beds_min = models.IntegerField( blank=True, null=True)
+    radius = models.IntegerField(blank=True, null=True)
+    price_min = models.IntegerField(blank=True, null=True)
 
-    sqft_min = models.IntegerField(default = None)
-    age_min = models.IntegerField(default = None)
-    lot_sqft_max = models.IntegerField(default = None)
-    price_max = models.IntegerField(default = None)
-    lot_sqft_min = models.IntegerField(default = None)
-    prop_type = models.CharField(max_length = 20,choices = PROP_TYPE_CHOICES,default = None)
-    age_max = models.IntegerField(default = None)
-    sort = models.CharField(max_length = 20,choices = SORT_CHOICES,default = None)
-    sqft_max = models.IntegerField(default = None)
+    sqft_min = models.IntegerField(blank=True, null=True)
+    age_min = models.IntegerField(blank=True, null=True)
+    lot_sqft_max = models.IntegerField(blank=True, null=True)
+    price_max = models.IntegerField(blank=True, null=True)
+    lot_sqft_min = models.IntegerField(blank=True, null=True)
+    prop_type = models.CharField(max_length = 20,choices = PROP_TYPE_CHOICES, blank = True, default = '')
+    age_max = models.IntegerField(blank=True, null=True)
+    sort = models.CharField(max_length = 20,choices = SORT_CHOICES, blank = True, default = '')
+    sqft_max = models.IntegerField(blank=True, null=True)
 
 
 
 class ComputeDeals(models.Model):
-    PERIOD_CHOICES = [('1 month', '1m'), ('3 months','3m'),('6 months','6m'),('One year','12m')]
+    PERIOD_CHOICES = [('1 month', '1 month'), ('3 months','3 months'),('6 months','6 months'),('One year','One year')]
     COMPARE_CHOICES = [('below','below'),('above','above'),('equals','equals')]
 
     
     period =  models.CharField(max_length = 20,choices = PERIOD_CHOICES,default = None)
     compare = models.CharField(max_length = 20,choices = COMPARE_CHOICES,default = None)
-    percentage_compare_average_price =  models.IntegerField(default = None)
+    percentage_compare_average_price =  models.IntegerField(default = 0)
+
+    def get_percentage_compare_average_price(self):
+        return self.percentage_compare_average_price
 
 class Deals(models.Model):
-    PROPERTY_STATUS_CHOICES = [ ('For rent', 'rent'), ('For Sale','sale')
-
+    PROPERTY_STATUS_CHOICES = [ ('For Rent', 'For Rent'), ('For Sale','For Sale')
     ]
+   # DAY_CHOICES = [('mon,tue,wed,thu,fri,sat,sun', 'Daily'), ('sat,sun', 'Weekends')]
+   # TIME_CHOICES = [(5, '5:00am'), (6, '6:00am'), (7, '7:00am'), 
+    #               (8, '8:00am'), (20, '8:00pm'), (21, '9:00pm'),(22, '10:00pm')]
+
     name = models.CharField(max_length=20)
-    property_status = models.CharField(max_length = 20,choices = PROPERTY_STATUS_CHOICES)
+    property_status = models.CharField(max_length = 20,choices = PROPERTY_STATUS_CHOICES, default = 'For Rent')
     adress = models.ForeignKey('Adress', on_delete=models.CASCADE)
     assets = models.ForeignKey('AssetTypes', on_delete=models.CASCADE)
     computeDeal = models.ForeignKey('ComputeDeals', on_delete=models.CASCADE)
+    #ReceveEmail = models.BooleanField(default=True)
+    #days = models.CharField(max_length=100, choices=DAY_CHOICES)
+    #time = models.IntegerField(choices = TIME_CHOICES)
+
+
+    
 
     def __str__(self):
         return self.name
-    @staticmethod
-    def get_query_params():
-        adress_params = vars(Adress.objects.all().last())
-        address_params.pop('_state')
-        address_params.pop('id')
+   
+    def get_query_params(self):
+        address_params = vars(self.adress)
+        #address_params.pop('_state')
+        #address_params.pop('id')
 
-        asset_params = vars(AssetTypes.objects.all().last())
-        asset_params.pop('_state')
-        asset_params.pop('id')
+        asset_params = vars(self.assets)
+        #asset_params.pop('_state')
+        #asset_params.pop('id')
 
         query_params = {}
-        query_params.update(adress_params)
+        query_params.update(address_params)
         query_params.update(asset_params)
+        query_params.pop('_state')
+        query_params.pop('id')
+        #query_params = json.dumps(query_params)
+        #query_params = query_params.replace('"', "")
         #query_params.update(compute_params)
     
-         return query_params
+        return query_params
 
-    @staticmethod
-    def search_query(prop_status, query_params):
-        url = ''
-        if prop_status=='rent':
+    
+    def search_query(self):
+    
+        if self.property_status=='For Rent':
             url = url_for_rent
-        if prop_status == 'sale':
+        else :
             url = url_for_sale
 
         # header
         headers = {
-          'x-rapidapi-host': host,
-           'x-rapidapi-key': api_key
+          "x-rapidapi-host": host,
+           "x-rapidapi-key": api_key
           }
-
+        query_params = self.get_query_params()
+       
         # response
+        er = {'city': 'Washington', 'state_code': 'WA', 'postal_code': '', 'offset': '0', 'limit': 200, 'baths_min': 1, 'beds_min': 1, 'radius': 5, 'price_min': 0, 'sqft_min': 0, 'age_min': 0, 'lot_sqft_max': 800, 'price_max': 100000, 'lot_sqft_min': 0, 'prop_type': 'single_family', 'age_max': 10, 'sort': 'sold_date', 'sqft_max': 1000}
         response = requests.request("GET", url, headers=headers, params=query_params)
         return response.json()
 
-    @staticmethod
-    def get_historic_data_similar_asset(url= url_historic,query_params = Deals.get_query_params()):
+    def get_historic_data_similar_asset(self):
+        query_params = self.get_query_params()
+        
             # header
         headers = {
           'x-rapidapi-host': host,
            'x-rapidapi-key': api_key
           }
+        url= url_historic
 
         # response
         response = requests.request("GET", url, headers=headers, params=query_params)
         return response.json()
 
-    @staticmethod
-    def process_json_response(response_json):
+    
+    def process_json_response(self,response_json):
         """
         Process the list for sale API response.
         Convert each listing to a dataframe, append to a list, and concatenate to one dataframe.
@@ -141,41 +163,93 @@ class Deals(models.Model):
         # concatenate all dataframes, for missing col values enter null value
         return pd.concat(dataframe_list, axis=0, ignore_index=True, sort=False)
 
-    @staticmethod
-    def average_price_sold():
-
+   
+    def filter_month(self):
         """
-        Computes Average Sold price
-        """
-        hist = Deals.get_historic_data_similar_asset()
+        Filter dataframe to return values for the last x months.
 
-        df_sold = Deals.process_json_response(hist)
+        Gets the current data, and computes the months difference date bwtween current and what values entered as argument(by), then filters the data to return the desired dataframe
 
-        return df_sold["price"].mean()
-    
-    def percentage_average_market_data(self,p, data, avp,compare="below" ):
-        """
-        Filters dataframe to return a new data frame based on below/above/equals average market price of sold properties
         Parameters
         ----------
-        data [dataframe]: dataframe for properties
-        p[int]: Represent percentage number from 0 to 100
-        avp [float]: Average Market Price
-        compare[String]: Get the compare mode used during filtering.Three modes available: above, below and equals
+    
 
         Returns
         -------
         [dataframe] Filtered Dataframe
+
         """
+        # Get historic similar assets data in json
+        hist = self.get_historic_data_similar_asset()
+
+        df = self.process_json_response(hist)
+        #Grap the last_update column
+        df["last_update"] = pd.to_datetime(df["last_update"], utc = True)
+
+        #Get the current time"
+        now = pd.to_datetime("now", utc=True)
+        #Compute the diffrence in month between current and dates in the last update column and create a new column
+        df["monthDiff"] = abs((now - df["last_update"]) /np.timedelta64(1,'M'))
     
+        # Filters he dataframe based on monthDiff column
+        if self.computeDeal.period =="1 month":
+            df_new= df[df["monthDiff"] <= 1]
+        elif self.computeDeal.period =="3 months":
+            df_new= df[df["monthDiff"] <= 3 ]
+        elif self.computeDeal.period =="6 months":
+            df_new= df[df["monthDiff"] <= 6 ]
+        elif self.computeDeal.period =="One year":
+            df_new= df[df["monthDiff"] <= 12 ]
+        else:
+            df_new = df
+        return df_new
+    
+
+   
+    def average_price_hist(self):
+
+        """
+        Computes Average Sold price
+        """
+        df_hist = self.filter_month()
+
+        return df_hist['price'].mean()
+
+    def convert_add_price(self,data):
+        data['community'] = data['community'].astype('str')
+        data['community']=data.community.apply(eval)
+        price = []
+        for i in range(data['community'].size):
+            price.append(data['community'][i]['price_max'])
+        
+        data['price'] = pd.DataFrame(price)
+        return data
+    
+    def percentage_average_market_data(self):
+        """
+        Filters dataframe to return a new data frame based on below/above/equals average market price of sold properties
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        [dataframe] Filtered Dataframe
+        """
+        data_json = self.search_query()
+        data = self.process_json_response(data_json)
+        data = self.convert_add_price(data)
         #Computes the percentage value of the avp
-        p_value = avp - (p/100 * avp)
+        average_price = self.average_price_hist()
+        compare_value = self.computeDeal.compare
+
+        p_value =  average_price - ((self.computeDeal.get_percentage_compare_average_price()/100)* average_price )
         #Filters data based on p_value
-        if compare =="below":
+        if compare_value  =="below":
+
             df = data[data["price"]< p_value ]
-        elif compare =="above":
+        elif compare_value =="above":
             df = data[data["price"]> p_value ]
-        elif compare == "equals":
+        elif compare_value =="equals":
             df = data[data["price"] ==  p_value ]
         else:
             df = data
