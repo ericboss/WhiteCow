@@ -13,21 +13,22 @@ app = Celery('WhiteCow')
 # pickle the object when using Windows.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-
+app.conf.timezone = 'GMT+1'
 days = ['mon,tue,wed,thu,fri,sat,sun', 'sat,sun']
-times = [5,6,7,8,20,21,22]
+times = [5,6,7,8,17,20,21,22]
 count = 1
 app.conf.beat_schedule={}
 for day in days:
     for time in times:
         task = "task "+str(count)
         app.conf.beat_schedule[task] = {
-            'task':'deal.tasks.print_hobby',
+            'task':'deal.tasks.email',
             'schedule':crontab(minute=0,hour=time, day_of_week=day)
         
 
         }
         count+=1
+
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 

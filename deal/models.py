@@ -4,6 +4,7 @@ import numpy as np
 import requests
 from .config import *
 import json
+from django.contrib.auth.models import User
 
 class Adress(models.Model):
     city = models.CharField(max_length = 40)
@@ -26,7 +27,7 @@ class AssetTypes(models.Model):
 
     
     offset = models.CharField(max_length = 10, default = "0")
-    limit = models.IntegerField(default=200)
+    limit = models.IntegerField(default=10)
     baths_min = models.IntegerField( blank=True, null=True)
     beds_min = models.IntegerField( blank=True, null=True)
     radius = models.IntegerField(blank=True, null=True)
@@ -59,18 +60,22 @@ class ComputeDeals(models.Model):
 class Deals(models.Model):
     PROPERTY_STATUS_CHOICES = [ ('For Rent', 'For Rent'), ('For Sale','For Sale')
     ]
-   # DAY_CHOICES = [('mon,tue,wed,thu,fri,sat,sun', 'Daily'), ('sat,sun', 'Weekends')]
-   # TIME_CHOICES = [(5, '5:00am'), (6, '6:00am'), (7, '7:00am'), 
-    #               (8, '8:00am'), (20, '8:00pm'), (21, '9:00pm'),(22, '10:00pm')]
+    DAY_CHOICES = [('mon,tue,wed,thu,fri,sat,sun', 'Daily'), ('sat,sun', 'Weekends')]
+    TIME_CHOICES = [(5, '5:00am'), (6, '6:00am'), (7, '7:00am'), 
+                   (8, '8:00am'), (17, '5:00pm'), (21, '9:00pm'),(22, '10:00pm')]
 
+
+    
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Deals", null=True)
     name = models.CharField(max_length=20)
     property_status = models.CharField(max_length = 20,choices = PROPERTY_STATUS_CHOICES, default = 'For Rent')
     adress = models.ForeignKey('Adress', on_delete=models.CASCADE)
     assets = models.ForeignKey('AssetTypes', on_delete=models.CASCADE)
     computeDeal = models.ForeignKey('ComputeDeals', on_delete=models.CASCADE)
-    #ReceveEmail = models.BooleanField(default=True)
-    #days = models.CharField(max_length=100, choices=DAY_CHOICES)
-    #time = models.IntegerField(choices = TIME_CHOICES)
+    ReceveEmail = models.BooleanField(default=True)
+    days = models.CharField(max_length=100, choices=DAY_CHOICES, blank = True, default = '')
+    time = models.IntegerField(choices = TIME_CHOICES, blank = True, null = True)
 
 
     
@@ -253,7 +258,7 @@ class Deals(models.Model):
             df = data[data["price"] ==  p_value ]
         else:
             df = data
-        return df
+        return df.to_json(orient='split')
         
 
 

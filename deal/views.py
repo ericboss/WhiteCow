@@ -3,12 +3,12 @@ from django.views.generic import ListView, CreateView
 from .models import Deals, Adress, ComputeDeals, AssetTypes
 from django import forms
 from .forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
-
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(request, 'deal/index.html')
 
-
+@login_required
 def create_deal(request):
     if request.method == 'POST':
         form_deal = DealsForm(request.POST)
@@ -24,7 +24,8 @@ def create_deal(request):
             address = Adress.objects.all().last()
             asset = AssetTypes.objects.all().last()
             compute = ComputeDeals.objects.all().last()
-            Deals.objects.create(name=name, property_status=property_status, adress=address,assets=asset,computeDeal=compute)
+            de = Deals.objects.create(name=name, property_status=property_status, adress=address,assets=asset,computeDeal=compute)
+            request.user.Deals.add(de)
             return redirect('display')
     else:
         form_deal = DealsForm()
@@ -32,7 +33,7 @@ def create_deal(request):
         form_compute = DealComputeDealForm()
         form_asset = DealAssetTypeForm()
     return render(request, 'deal/deal-form.html', {'deal': form_deal,'adress':form_adress, 'compute':form_compute, 'asset':form_asset})
-
+@login_required
 def deal_diaply_on_search(request):
 
     deal = Deals.objects.all().last()
@@ -68,11 +69,11 @@ def deal_diaply_on_search(request):
         
     return render(request, 'deal/display.html', {'deal':deal,'deal_form': form_deal,'adress':form_adress, 'compute':form_compute, 'asset':form_asset})
 
-
+@login_required
 def manage_subscriptions(request):
     
-    deal = Deals.objects.filter(owner__user=request.user)
-    return render(request, 'deal/subscriptions.html', {'deal':deal})
+    #deal = Deals.objects.all()
+    return render(request, 'deal/subscriptions.html', {})
         
 def edit(request, pk):
     deal = Deals.objects.get(pk = pk)
@@ -85,7 +86,7 @@ def edit(request, pk):
         deal_form = DealsForm( instance=deal)
     return render(request, 'deal/edit.html', {'edit_form':deal_form, 'deal':deal})
 
-    
+@login_required   
 def delete(request, pk):
 
     deal = Deals.objects.get(pk = pk) 
@@ -94,7 +95,7 @@ def delete(request, pk):
         return redirect('subscriptions')
     return render(request, 'deal/delete.html', {'deal':deal})
 
-
+@login_required
 def deal_diaplay_specific_search_id(request, pk):
 
     deal = Deals.objects.get(pk = pk) 

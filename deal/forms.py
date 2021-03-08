@@ -26,4 +26,4 @@ class DealsForm(ModelForm):
     
     class Meta:
         model = Deals
-        fields = ['name', 'property_status']
+        fields = ['name', 'property_status','days','time']
