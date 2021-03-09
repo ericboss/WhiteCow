@@ -16,4 +16,4 @@ class TestModels(TestCase):
     
     def test_get_query_params(self):
         print("#######################")
-        print(self.deal1.get_query_params)
+        print(self.deal1.get_query_params())
