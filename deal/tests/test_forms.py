@@ -1,8 +1,8 @@
 from deal.forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
-from django.test import SimpleTestCase
+from django.test import TestCase
 from deal.models import Deals, ComputeDeals, Adress,AssetTypes
 
-class TestForms(SimpleTestCase):
+class TestForms(TestCase):
     def setUp(self):
         self.address1 = Adress.objects.create(city="New York City", state_code="NY")
         self.asset1 = AssetTypes.objects.create()
