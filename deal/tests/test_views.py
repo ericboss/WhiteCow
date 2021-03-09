@@ -15,7 +15,7 @@ class TestViews(TestCase):
         self.compute1 = ComputeDeals.objects.create(period='1 month', compare='below', percentage_compare_average_price=0)
         self.deal1 = Deals.objects.create(name='deal1', property_status='For Rent', adress=self.address1, assets=self.asset1, computeDeal=self.compute1)
         
-        self.pk = deal1.pk
+        self.pk = self.deal1.pk
 
         self.edit_deal_url = reverse('edit', args=[self.pk])
 
