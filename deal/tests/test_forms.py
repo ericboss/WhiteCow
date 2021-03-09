@@ -25,6 +25,6 @@ class TestForms(TestCase):
     def test_adress_form_valid_data(self):
 
         login = self.client.login(username='testuser', password='12345')
-        address = Adress.objects.get(pk = self.pk)
-        form_adress = DealAddressForm(instance=address)
+        address = Deals.objects.get(pk = self.pk)
+        form_adress = DealsForm(instance=address)
         self.assertTrue(form_adress.is_valid()) 
