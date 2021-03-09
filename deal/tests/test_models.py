@@ -15,8 +15,11 @@ class TestModels(TestCase):
         self.pk = self.deal1.pk
     
     def test_get_query_params(self):
-        print("#######################")
-        print(self.deal1.get_query_params())
+        
 
         params = {'city': 'New York City', 'state_code': 'NY', 'postal_code': '', 'offset': '0', 'limit': 10, 'baths_min': None, 'beds_min': None, 'radius': None, 'price_min': None, 'sqft_min': None, 'age_min': None, 'lot_sqft_max': None, 'price_max': None, 'lot_sqft_min': None, 'prop_type': '', 'age_max': None, 'sort': '', 'sqft_max': None}
         self.assertEqual(self.deal1.get_query_params(), params )
+
+    def test_search_query_GET(self):
+        response = self.deal1.search_query()
+        self.assertEqual(response.status_code, 200)

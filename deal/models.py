@@ -121,7 +121,7 @@ class Deals(models.Model):
         # response
         er = {'city': 'Washington', 'state_code': 'WA', 'postal_code': '', 'offset': '0', 'limit': 200, 'baths_min': 1, 'beds_min': 1, 'radius': 5, 'price_min': 0, 'sqft_min': 0, 'age_min': 0, 'lot_sqft_max': 800, 'price_max': 100000, 'lot_sqft_min': 0, 'prop_type': 'single_family', 'age_max': 10, 'sort': 'sold_date', 'sqft_max': 1000}
         response = requests.request("GET", url, headers=headers, params=query_params)
-        return response.json()
+        return response
 
     def get_historic_data_similar_asset(self):
         query_params = self.get_query_params()
@@ -135,6 +135,9 @@ class Deals(models.Model):
 
         # response
         response = requests.request("GET", url, headers=headers, params=query_params)
+        return response
+    
+    def to_json(self, response):
         return response.json()
 
     
@@ -186,8 +189,9 @@ class Deals(models.Model):
         """
         # Get historic similar assets data in json
         hist = self.get_historic_data_similar_asset()
+        to_json = self.to_json(hist)
 
-        df = self.process_json_response(hist)
+        df = self.process_json_response(to_json)
         #Grap the last_update column
         df["last_update"] = pd.to_datetime(df["last_update"], utc = True)
 
@@ -240,7 +244,9 @@ class Deals(models.Model):
         -------
         [dataframe] Filtered Dataframe
         """
-        data_json = self.search_query()
+        data= self.search_query()
+        data_json = self.to_json(data)
+
         data = self.process_json_response(data_json)
         data = self.convert_add_price(data)
         #Computes the percentage value of the avp
