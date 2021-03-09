@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from deal.views import index,DealListView, SubscriptionsView
+from deal.views import index,DealListView, SubscriptionsView,manage_subscriptions
 
 
 class TestUrls(SimpleTestCase):
@@ -11,6 +11,5 @@ class TestUrls(SimpleTestCase):
         self.assertEqual(resolve(url).func, index)
 
     def test_deals_is_resolved(self):
-        url = reverse('deals')
-        print(url)
-        #self.assertEqual(resolve(url).func, DealListView.as_view)
+        url = reverse('subscriptions')
+        self.assertEqual(resolve(url).func, manage_subscriptions)
