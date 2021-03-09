@@ -1,8 +1,8 @@
 from deal.forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
 from django.test import SimpleTestCase
 
-
-def setUp(self):
+class TestForms(SimpleTestCase):
+    def setUp(self):
         self.address1 = Adress.objects.create(city="New York City", state_code="NY")
         self.asset1 = AssetTypes.objects.create()
         self.compute1 = ComputeDeals.objects.create(period='1 month', compare='below', percentage_compare_average_price=0)
@@ -19,6 +19,6 @@ def setUp(self):
 
 
 
-def test_adress_form_valid_data(self):
-    form_adress = DealAddressForm(instance=self.address)
-    self.assertTrue(form_adress.is_valid()) 
+    def test_adress_form_valid_data(self):
+        form_adress = DealAddressForm(instance=self.address)
+        self.assertTrue(form_adress.is_valid()) 
