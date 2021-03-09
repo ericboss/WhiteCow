@@ -69,7 +69,7 @@ def deal_diaply_on_search(request):
         
     return render(request, 'deal/display.html', {'deal':deal,'deal_form': form_deal,'adress':form_adress, 'compute':form_compute, 'asset':form_asset})
 
-#@login_required
+@login_required
 def manage_subscriptions(request):
     
     #deal = Deals.objects.all()

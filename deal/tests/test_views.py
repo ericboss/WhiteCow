@@ -29,7 +29,8 @@ class TestViews(TestCase):
 
     def test_subscriptions(self):
 
-        response = self.client.get(self.subscriptions_url )
+        response = self.client.get(self.subscriptions_url)
+        print(response.text)
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/subscriptions.html')
