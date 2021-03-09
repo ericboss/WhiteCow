@@ -136,8 +136,8 @@ class Deals(models.Model):
         # response
         response = requests.request("GET", url, headers=headers, params=query_params)
         return response
-    
-    def to_json(self, response):
+    @staticmethod
+    def to_json(response):
         return response.json()
 
     
@@ -189,7 +189,7 @@ class Deals(models.Model):
         """
         # Get historic similar assets data in json
         hist = self.get_historic_data_similar_asset()
-        to_json = self.to_json(hist)
+        to_json = to_json(hist)
 
         df = self.process_json_response(to_json)
         #Grap the last_update column
@@ -245,7 +245,7 @@ class Deals(models.Model):
         [dataframe] Filtered Dataframe
         """
         data= self.search_query()
-        data_json = self.to_json(data)
+        data_json =to_json(data)
 
         data = self.process_json_response(data_json)
         data = self.convert_add_price(data)
