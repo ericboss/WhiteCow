@@ -1,10 +1,10 @@
 from django.urls import path
 from . import views
-from .views import DealListView, SubscriptionsView
+#from .views import DealListView, SubscriptionsView
 
 urlpatterns = [
     path('', views.index, name= 'index'),
-    path('deals/', DealListView.as_view(), name = 'deals'),
+    #path('deals/', DealListView.as_view(), name = 'deals'),
     path('deals/subscriptions', views.manage_subscriptions, name = 'subscriptions'),
     path('deals/display', views.deal_diaply_on_search, name = 'display'),
     path('deals/new', views.create_deal, name = 'deals-new'),
