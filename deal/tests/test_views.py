@@ -93,3 +93,22 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertEquals(self.deal1.name, 'deal1')
+
+    def test_specific_deal_POST(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        deal = Deals.objects.get(pk = self.pk)
+        address = Adress.objects.get(pk = self.pk) 
+        asset = AssetTypes.objects.get(pk = self.pk) 
+        compute = ComputeDeals.objects.get(pk = self.pk)
+
+
+        deal_form = DealsForm( instance=deal)
+        form_adress = DealAddressForm(instance=address)
+        form_compute = DealComputeDealForm(instance=compute)
+        form_asset = DealAssetTypeForm(instance=asset)
+
+        response = self.client.post(self.display_specific_url, {'deal':deal,'deal_form': deal_form,'adress':form_adress, 'compute':form_compute, 'asset':form_asset})
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(self.deal1.name, 'deal1')
