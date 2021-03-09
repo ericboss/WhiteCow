@@ -1,5 +1,6 @@
 from deal.forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
 from django.test import SimpleTestCase
+from deal.models import Deals, ComputeDeals, Adress,AssetTypes
 
 class TestForms(SimpleTestCase):
     def setUp(self):
