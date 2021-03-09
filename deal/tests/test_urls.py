@@ -12,4 +12,4 @@ class TestUrls(SimpleTestCase):
 
     def test_deals_is_resolved(self):
         url = reverse('deals')
-        self.assertEqual(resolve(url).func, DealListView.as_view())
+        self.assertEqual(resolve(url).func, DealListView.as_view)
