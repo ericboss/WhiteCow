@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from deal.models import Deals, ComputeDeals, Adress,AssetTypes
 import json
+from django.contrib.auth.models import User
 
 class TestViews(TestCase):
     def setUp(self):
@@ -13,7 +14,8 @@ class TestViews(TestCase):
         self.address1 = Adress.objects.create(city="New York City", state_code="NY")
         self.asset1 = AssetTypes.objects.create()
         self.compute1 = ComputeDeals.objects.create(period='1 month', compare='below', percentage_compare_average_price=0)
-        self.deal1 = Deals.objects.create(name='deal1', property_status='For Rent', adress=self.address1, assets=self.asset1, computeDeal=self.compute1)
+        self.user = User.objects.create_user(username='testuser', email='test@company.com', password='12345')
+        self.deal1 = Deals.objects.create(user=self.user, name='deal1', property_status='For Rent', adress=self.address1, assets=self.asset1, computeDeal=self.compute1)
         
         self.pk = self.deal1.pk
 
@@ -27,7 +29,32 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/index.html')
 
-   
+    def test_subscriptions(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(self.subscriptions_url)
+        
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/subscriptions.html')
+
+    def test_display(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(self.display_url)
+        
+
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/display.html')
+
+    def test_deals_new(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(self.deals_new_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/deal-form.html')
 
     def test_edit(self):
 
