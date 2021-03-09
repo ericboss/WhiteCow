@@ -74,7 +74,8 @@ def manage_subscriptions(request):
     
     #deal = Deals.objects.all()
     return render(request, 'deal/subscriptions.html')
-        
+
+@login_required      
 def edit(request, pk):
     deal = Deals.objects.get(pk = pk)
     if request.method == 'POST':

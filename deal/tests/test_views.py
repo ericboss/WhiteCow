@@ -20,6 +20,8 @@ class TestViews(TestCase):
         self.pk = self.deal1.pk
 
         self.edit_deal_url = reverse('edit', args=[self.pk])
+        self.delete_url = reverse('delete', args = [self.pk])
+        self.display_specific_url = reverse('display_specific', args=[self.pk])
 
     def test_index(self):
 
@@ -57,10 +59,26 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'deal/deal-form.html')
 
     def test_edit(self):
-
+        
+        login = self.client.login(username='testuser', password='12345')
         response = self.client.get(self.edit_deal_url)
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/edit.html')
 
+    
+    def test_delete(self):
+        login = self.client.login(username='testuser', password='12345')
 
+        response = self.client.get(self.delete_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/delete.html')
+
+    def test_display_specific(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.get(self.display_specific_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/display_specific.html')
