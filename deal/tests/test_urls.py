@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from deal.views import index,DealListView, SubscriptionsView,manage_subscriptions,deal_diaply_on_search,create_deal,edit, delete, deal_diaplay_specific_search_id
+from deal.views import index,manage_subscriptions,deal_diaply_on_search,create_deal,edit, delete, deal_diaplay_specific_search_id
 
 
 class TestUrls(SimpleTestCase):
