@@ -23,3 +23,7 @@ class TestModels(TestCase):
     def test_search_query_GET(self):
         response = self.deal1.search_query()
         self.assertEqual(response.status_code, 200)
+
+    
+
+       
