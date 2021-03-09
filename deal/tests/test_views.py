@@ -24,7 +24,7 @@ class TestViews(TestCase):
         self.delete_url = reverse('delete', args = [self.pk])
         self.display_specific_url = reverse('display_specific', args=[self.pk])
 
-    def test_index(self):
+    def test_index_GET(self):
 
         
         response = self.client.get(self.index_url)
@@ -32,7 +32,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/index.html')
 
-    def test_subscriptions(self):
+    def test_subscriptions_GET(self):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(self.subscriptions_url)
@@ -41,7 +41,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/subscriptions.html')
 
-    def test_display(self):
+    def test_display_GET(self):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(self.display_url)
@@ -51,7 +51,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/display.html')
 
-    def test_deals_new(self):
+    def test_deals_new_GET(self):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(self.deals_new_url)
@@ -59,7 +59,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/deal-form.html')
 
-    def test_edit(self):
+    def test_edit_GET(self):
         
         login = self.client.login(username='testuser', password='12345')
         response = self.client.get(self.edit_deal_url)
@@ -68,7 +68,7 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'deal/edit.html')
 
     
-    def test_delete(self):
+    def test_delete_GET(self):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(self.delete_url)
@@ -76,7 +76,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/delete.html')
 
-    def test_display_specific(self):
+    def test_display_specific_GET(self):
         login = self.client.login(username='testuser', password='12345')
 
         response = self.client.get(self.display_specific_url)
