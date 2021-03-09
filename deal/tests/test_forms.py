@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class TestForms(TestCase):
     def setUp(self):
         self.client = Client()
-        self.address1 = Adress.objects.create(city="New York City", state_code="NY", postal_code="")
+        self.address1 = Adress.objects.create(city="New York City", state_code="NY")
         self.asset1 = AssetTypes.objects.create()
         self.compute1 = ComputeDeals.objects.create(period='1 month', compare='below', percentage_compare_average_price=0)
         self.user = User.objects.create_user(username='testuser', email='test@company.com', password='12345')
