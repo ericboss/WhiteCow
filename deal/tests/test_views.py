@@ -3,6 +3,7 @@ from django.urls import reverse
 from deal.models import Deals, ComputeDeals, Adress,AssetTypes
 import json
 from django.contrib.auth.models import User
+from deal.forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
 
 class TestViews(TestCase):
     def setUp(self):
