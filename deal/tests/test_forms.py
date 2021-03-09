@@ -1,6 +1,7 @@
 from deal.forms import DealAddressForm, DealAssetTypeForm, DealComputeDealForm, DealsForm
 from django.test import TestCase
 from deal.models import Deals, ComputeDeals, Adress,AssetTypes
+from django.contrib.auth.models import User
 
 class TestForms(TestCase):
     def setUp(self):
