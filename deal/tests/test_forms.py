@@ -15,7 +15,7 @@ class TestForms(TestCase):
 
 
         self.deal = Deals.objects.get(pk = self.pk)
-        self.address = Adress.objects.get(pk = self.pk) 
+        self.address = self.address1.objects.get(pk = self.pk) 
         self.asset = AssetTypes.objects.get(pk = self.pk) 
         self.compute = ComputeDeals.objects.get(pk = self.pk)
 
