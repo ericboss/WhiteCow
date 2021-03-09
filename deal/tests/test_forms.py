@@ -14,13 +14,14 @@ class TestForms(TestCase):
         self.pk = self.deal1.pk
 
 
-        self.deal = Deals.objects.get(pk = self.pk)
-        self.address = self.address1.objects.get(pk = self.pk) 
-        self.asset = AssetTypes.objects.get(pk = self.pk) 
-        self.compute = ComputeDeals.objects.get(pk = self.pk)
+        #self.deal = Deals.objects.get(pk = self.pk)
+        #self.address = self.address1.objects.get(pk = self.pk) 
+        #self.asset = AssetTypes.objects.get(pk = self.pk) 
+        #self.compute = ComputeDeals.objects.get(pk = self.pk)
 
 
 
     def test_adress_form_valid_data(self):
-        form_adress = DealAddressForm(instance=self.address)
+        address = Adress.objects.get(pk = self.pk)
+        form_adress = DealAddressForm(instance=address)
         self.assertTrue(form_adress.is_valid()) 
