@@ -133,13 +133,5 @@ def deal_diaplay_specific_search_id(request, pk):
 
     
 
-class DealListView(ListView):
-    queryset = Deals.objects.all().last()
-    context_object_name = "Deals"
-    template_name = "deal/deals.html"
 
-class SubscriptionsView(ListView):
-    queryset = Deals.objects.all()
-    context_object_name = "Deals"
-    template_name = "deal/subscriptions.html"
 

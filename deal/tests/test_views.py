@@ -29,20 +29,6 @@ class TestViews(TestCase):
 
    
 
-    def test_display(self):
-
-        response = self.client.get(self.display_url)
-
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'deal/display.html')
-
-    def test_deals_new(self):
-
-        response = self.client.get(self.deals_new_url)
-
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'deal/deal-form.html')
-
     def test_edit(self):
 
         response = self.client.get(self.edit_deal_url)
