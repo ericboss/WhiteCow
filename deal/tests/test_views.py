@@ -83,10 +83,12 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/display_specific.html')
     
-    def test_display_specific_POST(self):
+    def test_edit_POST(self):
         login = self.client.login(username='testuser', password='12345')
 
-        response = self.client.post(self.display_specific_url)
+        deal = Deals.objects.get(pk = self.pk)
+        deal_form = DealsForm(instance = deal)
+        response = self.client.post(self.edit_deal_url, {'edit_form':deal_form, 'deal':deal})
 
         self.assertEquals(response.status_code, 302)
         self.assertTemplateUsed(response, 'deal/display_specific.html')
