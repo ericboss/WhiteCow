@@ -82,3 +82,11 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'deal/display_specific.html')
+    
+    def test_display_specific_POST(self):
+        login = self.client.login(username='testuser', password='12345')
+
+        response = self.client.post(self.display_specific_url)
+
+        self.assertEquals(response.status_code, 302)
+        self.assertTemplateUsed(response, 'deal/display_specific.html')
