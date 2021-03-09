@@ -88,8 +88,8 @@ class TestViews(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         deal = Deals.objects.get(pk = self.pk)
-        deal_form = DealsForm( name='deal2', property_status='For Rent')
+        deal_form = DealsForm( instance=deal)
         response = self.client.post(self.edit_deal_url, {'edit_form':deal_form, 'deal':deal})
 
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.deal1.name, 'deal2')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(self.deal1.name, 'deal1')
