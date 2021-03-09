@@ -1,8 +1,11 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
+from django.urls import reverse, resolve
+from deal.views import index,DealListView, SubscriptionsView
 
 
-class TestUrls(TestCase):
+class TestUrls(SimpleTestCase):
 
 
     def test_index_is_resolved(self):
-        self.assertEqual(1, 2)
+        url = reverse('index')
+        self.assertEqual(resolve(url).func, index)
