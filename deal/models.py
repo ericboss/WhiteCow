@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 class Adress(models.Model):
     city = models.CharField(max_length = 40)
     state_code = models.CharField(max_length = 10)
-    postal_code = models.CharField(max_length = 10, blank = True)
+    postal_code = models.CharField(max_length = 10, blank = True, default = '')
 
     def __str__(self):
         return "{}, {}".format(self.city, self.state_code)
