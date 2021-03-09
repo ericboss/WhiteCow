@@ -140,5 +140,5 @@ class TestViews(TestCase):
         
         response = self.client.post(self.delete_url, {'deal':deal})
 
-        self.assertEquals(response.status_code, 320)
+        self.assertEquals(response.status_code, 302)
         
