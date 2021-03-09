@@ -4,10 +4,13 @@ from deal.models import Deals, ComputeDeals, Adress,AssetTypes
 import json
 
 class TestViews(TestCase):
-    client = Client()
-    response = client.get(reverse('index'))
 
-    self.assertEquals(response.status_code, 200)
-    self.assertTemplateUsed(response, 'deal/index.html')
+    def test_index(self):
+
+        client = Client()
+        response = client.get(reverse('index'))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'deal/index.html')
 
 
