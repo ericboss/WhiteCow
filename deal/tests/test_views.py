@@ -8,6 +8,6 @@ class TestViews(TestCase):
     response = client.get(reverse('index'))
 
     self.assertEquals(response.status_code, 200)
-    self.assertTemplateUsed(response, '')
+    self.assertTemplateUsed(response, 'deal/index.html')
 
 
