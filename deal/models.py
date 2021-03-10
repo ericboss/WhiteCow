@@ -59,11 +59,11 @@ class ComputeDeals(models.Model):
     - compare: The user might want to get data that are above/below average market price
     - percentage_compare_average_price: The user might want to get data that are X% above/below average market price.
     """
-    PERIOD_CHOICES = [('1 month', '1 month'), ('3 months','3 months'),('6 months','6 months'),('One year','One year')]
+    PERIOD_CHOICES = [(1, '1 month'), (3,'3 months'),(6,'6 months'),(12,'One year')]
     COMPARE_CHOICES = [('below','below'),('above','above'),('equals','equals')]
 
     
-    period =  models.CharField(max_length = 20,choices = PERIOD_CHOICES,default = None)
+    period =  models.IntegerField(choices = PERIOD_CHOICES, blank = True, null = True)
     compare = models.CharField(max_length = 20,choices = COMPARE_CHOICES,default = None)
     percentage_compare_average_price =  models.IntegerField(default = 0)
 
@@ -111,13 +111,9 @@ class Deals(models.Model):
         to get data.
         """
         address_params = vars(self.adress)
-        #address_params.pop('_state')
-        #address_params.pop('id')
 
         asset_params = vars(self.assets)
-        #asset_params.pop('_state')
-        #asset_params.pop('id')
-
+    
         query_params = {}
         query_params.update(address_params)
         query_params.update(asset_params)
@@ -129,14 +125,11 @@ class Deals(models.Model):
     
         return query_params
 
+    #url_for_rent
+    #url_for_sale
+    #url_historic
+    def property_search_query(self, url):
     
-    def search_query(self):
-    
-        if self.property_status=='For Rent':
-            url = url_for_rent
-        else :
-            url = url_for_sale
-
         # header
         headers = {
           "x-rapidapi-host": host,
@@ -145,23 +138,10 @@ class Deals(models.Model):
         query_params = self.get_query_params()
        
         # response
-        er = {'city': 'Washington', 'state_code': 'WA', 'postal_code': '', 'offset': '0', 'limit': 200, 'baths_min': 1, 'beds_min': 1, 'radius': 5, 'price_min': 0, 'sqft_min': 0, 'age_min': 0, 'lot_sqft_max': 800, 'price_max': 100000, 'lot_sqft_min': 0, 'prop_type': 'single_family', 'age_max': 10, 'sort': 'sold_date', 'sqft_max': 1000}
         response = requests.request("GET", url, headers=headers, params=query_params)
         return response
 
-    def get_historic_data_similar_asset(self):
-        query_params = self.get_query_params()
-        
-            # header
-        headers = {
-          'x-rapidapi-host': host,
-           'x-rapidapi-key': api_key
-          }
-        url= url_historic
 
-        # response
-        response = requests.request("GET", url, headers=headers, params=query_params)
-        return response
     @staticmethod
     def response_json(response):
         return response.json()
@@ -197,8 +177,15 @@ class Deals(models.Model):
         # concatenate all dataframes, for missing col values enter null value
         return pd.concat(dataframe_list, axis=0, ignore_index=True, sort=False)
 
-   
-    def filter_month(self):
+    def get_sold_data_properties(self):
+         # Get historic similar assets data in json
+        hist = self.property_search_query(url = url_historic)
+        to_json = Deals.response_json(hist)
+
+        df = self.process_json_response(to_json)
+        return df
+
+    def filter_sold_data(self, df):
         """
         Filter dataframe to return values for the last x months.
 
@@ -213,11 +200,7 @@ class Deals(models.Model):
         [dataframe] Filtered Dataframe
 
         """
-        # Get historic similar assets data in json
-        hist = self.get_historic_data_similar_asset()
-        to_json = Deals.response_json(hist)
-
-        df = self.process_json_response(to_json)
+       
         #Grap the last_update column
         df["last_update"] = pd.to_datetime(df["last_update"], utc = True)
 
@@ -227,14 +210,9 @@ class Deals(models.Model):
         df["monthDiff"] = abs((now - df["last_update"]) /np.timedelta64(1,'M'))
     
         # Filters he dataframe based on monthDiff column
-        if self.computeDeal.period =="1 month":
-            df_new= df[df["monthDiff"] <= 1]
-        elif self.computeDeal.period =="3 months":
-            df_new= df[df["monthDiff"] <= 3 ]
-        elif self.computeDeal.period =="6 months":
-            df_new= df[df["monthDiff"] <= 6 ]
-        elif self.computeDeal.period =="One year":
-            df_new= df[df["monthDiff"] <= 12 ]
+        if self.computeDeal.period is not None:
+
+            df_new= df[df["monthDiff"] <= self.computeDeal.period ]
         else:
             df_new = df
         return df_new
