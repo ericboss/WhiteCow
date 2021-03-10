@@ -21,9 +21,9 @@ def create_deal(request):
             form_adress.save()
             form_asset.save()
             form_compute.save()
-            address = Adress.objects.latest()
-            asset = AssetTypes.objects.latest()
-            compute = ComputeDeals.objects.latest()
+            address = Adress.objects.latest('id')
+            asset = AssetTypes.objects.latest('id')
+            compute = ComputeDeals.objects.latest('id')
             de = Deals.objects.create(name=name, property_status=property_status, adress=address,assets=asset,computeDeal=compute)
             request.user.Deals.add(de)
             return redirect('display')
@@ -36,10 +36,10 @@ def create_deal(request):
 @login_required
 def deal_diaply_on_search(request):
 
-    deal = Deals.objects.latest()
-    address = Adress.objects.latest()
-    asset = AssetTypes.objects.latest()
-    compute = ComputeDeals.objects.latest()
+    deal = Deals.objects.latest('id')
+    address = Adress.objects.latest('id')
+    asset = AssetTypes.objects.latest('id')
+    compute = ComputeDeals.objects.latest('id')
     if request.method == 'POST':
         form_deal = DealsForm(request.POST, instance=deal)
         form_adress = DealAddressForm(request.POST, instance=address)
@@ -51,11 +51,11 @@ def deal_diaply_on_search(request):
             form_adress.save()
             form_asset.save()
             form_compute.save()
-            address = Adress.objects.latest()
-            asset = AssetTypes.objects.latest()
-            compute = ComputeDeals.objects.latest()
-            Deals.objects.latest().update(name=name, property_status=property_status, adress=address,assets=asset,computeDeal=compute)
-            deal = Deals.objects.latest()
+            address = Adress.objects.latest('id')
+            asset = AssetTypes.objects.latest('id')
+            compute = ComputeDeals.objects.latest('id')
+            Deals.objects.latest('id').update(name=name, property_status=property_status, adress=address,assets=asset,computeDeal=compute)
+            deal = Deals.objects.latest('id')
 
     else:
 
