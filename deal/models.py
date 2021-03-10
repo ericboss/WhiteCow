@@ -177,7 +177,7 @@ class Deals(models.Model):
         # concatenate all dataframes, for missing col values enter null value
         return pd.concat(dataframe_list, axis=0, ignore_index=True, sort=False)
 
-    def get_sold_data_properties(self):
+    def get_sold_data(self):
          # Get historic similar assets data in json
         hist = self.property_search_query(url = url_historic)
         to_json = Deals.response_json(hist)
@@ -185,7 +185,7 @@ class Deals(models.Model):
         df = self.process_json_response(to_json)
         return df
 
-    def filter_sold_data(self, df):
+    def filter_sold_data(self):
         """
         Filter dataframe to return values for the last x months.
 
@@ -200,7 +200,7 @@ class Deals(models.Model):
         [dataframe] Filtered Dataframe
 
         """
-       
+        df = self.get_sold_data()
         #Grap the last_update column
         df["last_update"] = pd.to_datetime(df["last_update"], utc = True)
 
@@ -219,16 +219,17 @@ class Deals(models.Model):
     
 
    
-    def average_price_hist(self):
+    def average_price_sold(self):
 
         """
         Computes Average Sold price
         """
-        df_hist = self.filter_month()
+        df_hist = self.filter_sold_data()
 
         return df_hist['price'].mean()
 
-    def convert_add_price(self,data):
+
+    def convert_add_price_for_rent(self,data):
         data['community'] = data['community'].astype('str')
         data['community']=data.community.apply(eval)
         price = []
@@ -237,6 +238,23 @@ class Deals(models.Model):
         
         data['price'] = pd.DataFrame(price)
         return data
+    
+    def get_data_for_rent(self):
+        data= self.property_search_query(url = url_for_rent)
+        data_json =Deals.response_json(data)
+
+        data = self.process_json_response(data_json)
+        data = self.convert_add_price_for_rent(data)
+        return data
+
+    def get_data_for_sale(self):
+        data= self.property_search_query(url = url_for_sale)
+        data_json =Deals.response_json(data)
+
+        data = self.process_json_response(data_json)
+        
+        return data
+
     
     def percentage_average_market_data(self):
         """
@@ -248,13 +266,13 @@ class Deals(models.Model):
         -------
         [dataframe] Filtered Dataframe
         """
-        data= self.search_query()
-        data_json =Deals.response_json(data)
-
-        data = self.process_json_response(data_json)
-        data = self.convert_add_price(data)
+        if self.property_status == 'For Rent':
+            data = self.get_data_for_rent()
+        else:
+            data = self.get_data_for_sale()
+        
         #Computes the percentage value of the avp
-        average_price = self.average_price_hist()
+        average_price = self.average_price_sold()
         compare_value = self.computeDeal.compare
 
         p_value =  average_price - ((self.computeDeal.get_percentage_compare_average_price()/100)* average_price )
@@ -271,6 +289,7 @@ class Deals(models.Model):
         return df.to_json(orient='split')
         
 
+    
 
 
 
