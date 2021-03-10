@@ -7,6 +7,9 @@ import json
 from django.contrib.auth.models import User
 
 class Adress(models.Model):
+    """
+    Addres Class contains attributes necessary for saving the Adress of a deal.
+    """
     city = models.CharField(max_length = 40)
     state_code = models.CharField(max_length = 10)
     postal_code = models.CharField(max_length = 10, blank = True, default = '')
@@ -17,6 +20,10 @@ class Adress(models.Model):
 
 
 class AssetTypes(models.Model):
+    """
+    AssetTypes Class contains attributes for the assets of a real esate property.Deal Class will use
+     these assets along side with Adress,Computedeals class in order to comeout with  a deal.
+    """
 
     PROP_TYPE_CHOICES = [('single_family','single_family') ,('multi_family','multi_family'),
                           ('condo','condo'), ('mobile','mobile'),
@@ -46,6 +53,12 @@ class AssetTypes(models.Model):
 
 
 class ComputeDeals(models.Model):
+    """
+    Compute Deals Class contains attributes for making some computations for the deal.
+    - period: The user might want to compare data against average market price for the last x period( 1 month, 3 months etc)
+    - compare: The user might want to get data that are above/below average market price
+    - percentage_compare_average_price: The user might want to get data that are X% above/below average market price.
+    """
     PERIOD_CHOICES = [('1 month', '1 month'), ('3 months','3 months'),('6 months','6 months'),('One year','One year')]
     COMPARE_CHOICES = [('below','below'),('above','above'),('equals','equals')]
 
@@ -58,6 +71,15 @@ class ComputeDeals(models.Model):
         return self.percentage_compare_average_price
 
 class Deals(models.Model):
+    """
+    Deals class is for coming up with real estate deals. As atttributes, it contains a foreignkey to adress, ComputeDeals and 
+    AssetTypes class. Aded to that the deal has a name,
+    - property_status: whether the property if for rent or for sale
+    - user: We want to compute and store deals per user
+    - ReceiveEmail: option for whether the user  wants to receive email notifications
+    - days: The user has a soption to receive emails daily or during weekends
+    - time: The user can have as option to choose at what time he/she will like to receive notifications 
+    """
     PROPERTY_STATUS_CHOICES = [ ('For Rent', 'For Rent'), ('For Sale','For Sale')
     ]
     DAY_CHOICES = [('mon,tue,wed,thu,fri,sat,sun', 'Daily'), ('sat,sun', 'Weekends')]
@@ -84,6 +106,10 @@ class Deals(models.Model):
         return self.name
    
     def get_query_params(self):
+        """
+        This method is to get the user's query parameters. It will be later used to make a get request to the realestate API
+        to get data.
+        """
         address_params = vars(self.adress)
         #address_params.pop('_state')
         #address_params.pop('id')

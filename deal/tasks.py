@@ -4,12 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-@shared_task
-def print_hobby():
-    hobby = "django"
-    f = open ("deal/demo.txt", "a")
-    f.write(hobby)
-    f.close()
+
 
 
 days = ['mon,tue,wed,thu,fri,sat,sun', 'sat,sun']
